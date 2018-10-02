@@ -1,9 +1,22 @@
-\documentclass{article}
+\documentclass[12pt]{article}
+\usepackage[margin=1in]{geometry}
 \begin{document}
 \title{Garbage Collection}
 \author{Nicholas Czaban \& Joe MacInnes}
 \maketitle
-\section{Intro}
+\section{Introduction}
+Memory plays a crucial role in any program, for it is in memory that a process stores instructions, data, and references to data. Generally, there are two areas of memory available to a process: the stack and the heap. While the stack handles storage of local variables and procedure call information (e.g. return addresses and argument storage), the heap is used to dynamically allocate memory. This is useful for using memory only when it's needed, and for not wasting memory, since a programmer can specificy exactly how much memory is needed during allocation.  
+
+Once memory has been allocated on the heap, it is up to the stack to store a reference to the memory chunk. At any time following, the memory can be accessed by following this reference. The question then arises, ``What is done when the allocated memory is no longer needed?" The heap is not infinite - thus one cannot simply continue to allocate new memory forever. A programming language needs to provide some method for freeing no longer used memory.
+
+Traditionally most programming languages have used manual memory management to address the problem. This management style puts the freeing of memory into the hands of the programmer. For example, in C, the \textit{free()} function can be called on a pointer to release dynamically allocated memory it points to.
+
+Alas, however cliche ``with great power comes great responsibility" sounds, it applies well to manual memory management. There are several mistakes associated with it that can cause programs to crash or behave unexpectedly. Foremost of these is simply forgetting to free memory; this will result in the heap eventually running out of memory. Even if a reference is removed from the stack, the memory in the heap will remain unless explicitly freed. This type of problem is called a memory leak.
+
+Another problem is freeing memory before it is done being used. Then it is possible to have references to memory that is no longer allocatedi (dangling pointers, to continue the C example). Finally, repeatedly freeing the same memory can cause programs to crash. \cite{os_textbook}
+
+These issues prompted programming language developers to begin implementing automatic memory management, starting with John McCarthy and Lisp in the late 1950s.\cite{https://www.seas.harvard.edu/courses/cs252/2016fa/16.pdf} Over time, these algorithms have come to be called garbage collectors, and are a key piece of most modern programming languages. This paper explores garbage collectors, their comparison to manual memory management and performance, and their general strategies and implementations. 
+
 \subsection{Definitions}
 \section{Garbage Collection vs. Manual Memory Management}
 Although automatic garbage collection was first introduced with Lisp \cite{chis11}, the majority of programming languages used manual memory management until the 1990's. These are seen in constructor functions like malloc() in C or the new operator of C++, and their respective destructors free() and delete \cite{pythDocs}. Manual memory management is significantly more efficient than garbage collection or other automatic techniques. The memory is reclaimed immediately, whereas garbage collection systems leave memory unreclaimed for longer periods of time. This prevents memory ``thrashing'' when programs approach the limits of their working set.\\
@@ -28,6 +41,7 @@ There are a number of considerations for reference counting strategies, however.
 \subsection{Real-Time Garbage Collection}
 
 \section{Conclusion}
+<<<<<<< HEAD
 \newpage
 \begin{thebibliography}{}
 \bibitem{hertz05}
@@ -42,4 +56,6 @@ There are a number of considerations for reference counting strategies, however.
 \bibitem{pythDocs}
   Reference Counts". Extending and Embedding the Python Interpreter. 21 February 2008.
 \end{thebibliography}
+=======
+>>>>>>> 9d94a00f1f0fd355763cfd203c5b1467c7bb754e
 \end{document}
