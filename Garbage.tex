@@ -19,14 +19,43 @@ These issues prompted programming language developers to begin implementing auto
 
 \subsection{Definitions}
 \section{Garbage Collection vs. Manual Memory Management}
+Although automatic garbage collection was first introduced with Lisp \cite{chis11}, the majority of programming languages used manual memory management until the 1990's. These are seen in constructor functions like malloc() in C or the new operator of C++, and their respective destructors free() and delete \cite{pythDocs}. Manual memory management is significantly more efficient than garbage collection or other automatic techniques. The memory is reclaimed immediately, whereas garbage collection systems leave memory unreclaimed for longer periods of time. This prevents memory ``thrashing'' when programs approach the limits of their working set.\\
+
+Garbage collection, on the other hand, is more thorough in freeing memory than manual memory management. It is almost totally effective at preventing memory leaks, stops dangling pointer errors, and improves the modularity of a program \cite{hertz05}. Although garbage collection generally requires a good deal of overhead from the program to implement, the original Lisp version was designed for machines with only 30,000 words of memory.\\
+
+Garbage collectors are implemented as language features, either in the compiler or runtime system. In comparison, manual memory management is performed in the code; destructor calls are explicity written by the programmer into functions and loops.
 \subsection{Simultaneous GC and MMM}
+
 \section{Performance}
+
 \section{Strategies}
 \subsection{Tracing}
 \subsection{Reference Counting}
+Common causes of memory leaks in manual memory managed systems are unusual paths through code blocks \cite{pythDocs}. For instance, a block is freed at the end of a function, but if this function has a premature exit case (such as error catching) the block will remain allocated and unused. To avoid this, Python and other languages use {\it reference counting}, keeping track of the number of references to each object. Once the number of references reaches zero, the block can be safely freed.\\
+
+There are a number of considerations for reference counting strategies, however. Firstly, it is important to avoid cycles, or references storing references to each other. If these cycles are not accounted for, multiple blocks could remain in memory after they are needed, since the references to themselves persist afer all other references are removed. A second consideration is the type of count modifications. If a program is being run in a multithreaded environment, the reference counter must be changed with atomic operations.\\
 \subsection{Escape Analysis}
+
 \section{Implementation}
 \subsection{Compile-Time Garbage Collection}
 \subsection{Real-Time Garbage Collection}
+
 \section{Conclusion}
+<<<<<<< HEAD
+\newpage
+\begin{thebibliography}{}
+\bibitem{hertz05}
+  Matthew Hertz; Emery D. Berger (2005). ``Quantifying the Performance of Garbage Collection vs. Explicit Memory Management.'' OOPSLA 2005.
+
+\bibitem{chis11}
+  Chisnall, David (2011-01-12). Influential Programming Languages, Part 4: Lisp.
+  
+\bibitem{berg02}
+  Berger, E. D.; Zorn, B. G.; McKinley, K. S. (November 2002). "Reconsidering Custom Memory Allocation". Proceedings of the 17th ACM SIGPLAN conference on Object-oriented programming, systems, languages, and applications (PDF). pp. 1–12.
+
+\bibitem{pythDocs}
+  Reference Counts". Extending and Embedding the Python Interpreter. 21 February 2008.
+\end{thebibliography}
+=======
+>>>>>>> 9d94a00f1f0fd355763cfd203c5b1467c7bb754e
 \end{document}
