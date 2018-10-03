@@ -5,35 +5,39 @@
 \author{Nicholas Czaban \& Joe MacInnes}
 \maketitle
 \section{Introduction}
-Memory plays a crucial role in any program, for it is in memory that a process stores instructions, data, and references to data. Generally, there are two areas of memory available to a process: the stack and the heap. While the stack handles storage of local variables and procedure call information (e.g. return addresses and argument storage), the heap is used to dynamically allocate memory. This is useful for using memory only when it's needed, and for not wasting memory, since a programmer can specificy exactly how much memory is needed during allocation.  
+Memory plays a crucial role in any program, for it is in memory that a process stores instructions, data, and references to data. Generally, there are two areas of memory available to a process: the stack and the heap. While the stack handles storage of local variables and procedure call information (e.g. return addresses and argument storage), the heap is used to dynamically allocate memory. This is useful for using memory only when it's needed, and for not wasting memory, since a programmer can specify exactly how much memory is needed during allocation.\\
 
-Once memory has been allocated on the heap, it is up to the stack to store a reference to the memory chunk. At any time following, the memory can be accessed by following this reference. The question then arises, ``What is done when the allocated memory is no longer needed?" The heap is not infinite - thus one cannot simply continue to allocate new memory forever. A programming language needs to provide some method for freeing no longer used memory.
+Once memory has been allocated on the heap, it is up to the stack to store a reference to the memory chunk. At any time following, the memory can be accessed by following this reference. The question then arises, ``What is done when the allocated memory is no longer needed?" The heap is not infinite - thus one cannot simply continue to allocate new memory forever. A programming language needs to provide some method for freeing no longer used memory.\\
 
-Traditionally most programming languages have used manual memory management to address the problem. This management style puts the freeing of memory into the hands of the programmer. For example, in C, the \textit{free()} function can be called on a pointer to release dynamically allocated memory it points to.
+Traditionally most programming languages have used manual memory management to address the problem. This management style puts the freeing of memory into the hands of the programmer. For example, in C, the \textit{free()} function can be called on a pointer to release dynamically allocated memory it points to.\\
 
-Alas, however cliche ``with great power comes great responsibility" sounds, it applies well to manual memory management. There are several mistakes associated with it that can cause programs to crash or behave unexpectedly. Foremost of these is simply forgetting to free memory; this will result in the heap eventually running out of memory. Even if a reference is removed from the stack, the memory in the heap will remain unless explicitly freed. This type of problem is called a memory leak.
+Alas, however cliche ``with great power comes great responsibility'' sounds, it applies well to manual memory management. There are several mistakes associated with it that can cause programs to crash or behave unexpectedly. Foremost of these is simply forgetting to free memory; this will result in the heap eventually running out of memory. Even if a reference is removed from the stack, the memory in the heap will remain unless explicitly freed. This type of problem is called a memory leak.\\
 
-Another problem is freeing memory before it is done being used. Then it is possible to have references to memory that is no longer allocatedi (dangling pointers, to continue the C example). Finally, repeatedly freeing the same memory can cause programs to crash. \cite{os_textbook}
+Another problem is freeing memory before it is done being used. Then it is possible to have references to memory that is no longer allocated (dangling pointers, to continue the C example). Finally, repeatedly freeing the same memory can cause programs to crash. \cite{os_textbook}\\
 
 These issues prompted programming language developers to begin implementing automatic memory management, starting with John McCarthy and Lisp in the late 1950s.\cite{https://www.seas.harvard.edu/courses/cs252/2016fa/16.pdf} Over time, these algorithms have come to be called garbage collectors, and are a key piece of most modern programming languages. This paper explores garbage collectors, their comparison to manual memory management and performance, and their general strategies and implementations. 
 
 \subsection{Definitions}
 \section{Garbage Collection vs. Manual Memory Management}
-Although automatic garbage collection was first introduced with Lisp \cite{chis11}, the majority of programming languages used manual memory management until the 1990's. These are seen in constructor functions like malloc() in C or the new operator of C++, and their respective destructors free() and delete \cite{pythDocs}. Manual memory management is significantly more efficient than garbage collection or other automatic techniques. The memory is reclaimed immediately, whereas garbage collection systems leave memory unreclaimed for longer periods of time. This prevents memory ``thrashing'' when programs approach the limits of their working set.\\
+Although automatic garbage collection was first introduced with Lisp \cite{chis11}, the majority of programming languages used manual memory management until the 1990's. These are seen in constructor functions like \textit{malloc()} in C or the \textit{new} operator of C++, and their respective destructors \textit{free()} and \textit{delete} \cite{pythDocs}. Manual memory management is significantly more efficient than garbage collection or other automatic techniques. The memory is reclaimed immediately, whereas garbage collection systems leave memory unreleased for longer periods of time. This prevents memory ``thrashing'' when programs approach the limits of their working set.\\
 
-Garbage collection, on the other hand, is more thorough in freeing memory than manual memory management. It is almost totally effective at preventing memory leaks, stops dangling pointer errors, and improves the modularity of a program \cite{hertz05}. Although garbage collection generally requires a good deal of overhead from the program to implement, the original Lisp version was designed for machines with only 30,000 words of memory.\\
+Garbage collection, on the other hand, is more thorough in freeing memory than manual memory management. It is almost totally effective at preventing memory leaks, stops dangling pointer errors, and improves the modularity of a program \cite{hertz05}. Although garbage collection generally requires a good deal of overhead from the program to implement, the original Lisp version was designed for machines with only 30,000 words of memory \cite{chis11}.\\
 
-Garbage collectors are implemented as language features, either in the compiler or runtime system. In comparison, manual memory management is performed in the code; destructor calls are explicity written by the programmer into functions and loops.
+Garbage collectors are implemented as language features, either in the compiler or runtime system. In comparison, manual memory management is performed in the code; destructor calls are explicitly written by the programmer into functions and loops.
 \subsection{Simultaneous GC and MMM}
 
 \section{Performance}
 
 \section{Strategies}
+
 \subsection{Tracing}
+Tracing garbage collection is by far the most common form of garbage collection. In its traditional implementation, programs run until the heap is filled, then the program stops while the garbage collector frees up memory \cite{ibmJava}. The actual time and frequency that the program will be stopped is dependent on many factors, including the amount of garbage, the size of the objects used by the program, and how interconnected the objects are. The garbage collection process has two phases: mark and sweep.\\
+
+In the mark phase, all objects visible to the application are traced through and marked as live, preventing the garbage collector from freeing those objects. This tracing is done by starting at a root set - containing internal structures like stacks and global references - and following a chain of references through all possible paths. The ``dead'' objects to be freed by the garbage collector are the objects with no connections, direct or indirect, to the root set.
 \subsection{Reference Counting}
 Common causes of memory leaks in manual memory managed systems are unusual paths through code blocks \cite{pythDocs}. For instance, a block is freed at the end of a function, but if this function has a premature exit case (such as error catching) the block will remain allocated and unused. To avoid this, Python and other languages use {\it reference counting}, keeping track of the number of references to each object. Once the number of references reaches zero, the block can be safely freed.\\
 
-There are a number of considerations for reference counting strategies, however. Firstly, it is important to avoid cycles, or references storing references to each other. If these cycles are not accounted for, multiple blocks could remain in memory after they are needed, since the references to themselves persist afer all other references are removed. A second consideration is the type of count modifications. If a program is being run in a multithreaded environment, the reference counter must be changed with atomic operations.\\
+There are a number of considerations for reference counting strategies, however. Firstly, it is important to avoid cycles, or references storing references to each other. If these cycles are not accounted for, multiple blocks could remain in memory after they are needed, since the references to themselves persist after all other references are removed. A second consideration is the type of count modifications. If a program is being run in a multithreaded environment, the reference counter must be changed with atomic operations.
 \subsection{Escape Analysis}
 
 \section{Implementation}
@@ -41,21 +45,21 @@ There are a number of considerations for reference counting strategies, however.
 \subsection{Real-Time Garbage Collection}
 
 \section{Conclusion}
-<<<<<<< HEAD
 \newpage
 \begin{thebibliography}{}
-\bibitem{hertz05}
-  Matthew Hertz; Emery D. Berger (2005). ``Quantifying the Performance of Garbage Collection vs. Explicit Memory Management.'' OOPSLA 2005.
+\bibitem{berg02}
+  Berger, E. D.; Zorn, B. G.; McKinley, K. S. (November 2002). ``Reconsidering Custom Memory Allocation''. Proceedings of the 17th ACM SIGPLAN conference on Object-oriented programming, systems, languages, and applications. pp. 1–12.
 
 \bibitem{chis11}
   Chisnall, David (2011-01-12). Influential Programming Languages, Part 4: Lisp.
   
-\bibitem{berg02}
-  Berger, E. D.; Zorn, B. G.; McKinley, K. S. (November 2002). "Reconsidering Custom Memory Allocation". Proceedings of the 17th ACM SIGPLAN conference on Object-oriented programming, systems, languages, and applications (PDF). pp. 1–12.
+\bibitem{hertz05}
+  Hertz, Matthew; Berger, Emery D. (2005). ``Quantifying the Performance of Garbage Collection vs. Explicit Memory Management.'' OOPSLA 2005.
 
 \bibitem{pythDocs}
-  Reference Counts". Extending and Embedding the Python Interpreter. 21 February 2008.
+  ``Reference Counts''. Extending and Embedding the Python Interpreter. 21 February 2008.
+
+\bibitem{ibmJava}
+  ``Real-time Java, Part 4: Real-time garbage collection''.
 \end{thebibliography}
-=======
->>>>>>> 9d94a00f1f0fd355763cfd203c5b1467c7bb754e
 \end{document}
