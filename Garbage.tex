@@ -17,11 +17,10 @@ Another problem is freeing memory before it is done being used. Then it is possi
 
 These issues prompted programming language developers to begin implementing automatic memory management, starting with John McCarthy and Lisp in the late 1950s \cite{https://www.seas.harvard.edu/courses/cs252/2016fa/16.pdf}. Over time, these algorithms have come to be called garbage collectors, and are a key piece of most modern programming languages. This paper explores garbage collectors, their comparison to manual memory management and performance, and their general strategies and implementations. 
 
-\subsection{Definitions}
-\section{Garbage Collection vs. Manual Memory Management}
+\section{Garbage Collection versus Manual Memory Management}
 Although automatic garbage collection was first introduced with Lisp \cite{chis11}, the majority of programming languages used manual memory management until the 1990's. These are seen in constructor functions like \textit{malloc()} in C or the \textit{new} operator of C++, and their respective destructors \textit{free()} and \textit{delete} \cite{pythDocs}. Manual memory management is significantly more efficient than garbage collection or other automatic techniques. The memory is reclaimed immediately, whereas garbage collection systems leave memory unreleased for longer periods of time. This prevents memory ``thrashing'' when programs approach the limits of their working set.\\
 
-Garbage collection, on the other hand, is more thorough in freeing memory than manual memory management. It is almost totally effective at preventing memory leaks, stops dangling pointer errors, and improves the modularity of a program \cite{hertz05}. Although garbage collection generally requires a good deal of overhead from the program to implement, the original Lisp version was designed for machines with only 30,000 words of memory \cite{chis11}.\\
+Garbage collection, on the other hand, is more thorough in freeing memory than manual memory management when using a combination of automatic techniques. It is almost totally effective at preventing memory leaks, stops dangling pointer errors, and improves the modularity of a program \cite{hertz05}. Although garbage collection generally requires a good deal of overhead from the program to implement, the original Lisp version was designed for machines with only 30,000 words of memory \cite{chis11}.\\
 
 Garbage collectors are implemented as language features, either in the compiler or runtime system. In comparison, manual memory management is performed in the code; destructor calls are explicitly written by the programmer into functions and loops.
 \subsection{Simultaneous GC and MMM}
@@ -54,13 +53,12 @@ In these different styles,  we see a tradeoff between latency and throughput, wh
 
 
 \subsection{Compile-Time Garbage Collection}
-
 Compared to the overhead of running a real-time garbage collector alongside the user program, a garbage collector that operates at compile-time is quite attractive. A CTGC recognizes where in the program execution will no longer be needed and inserts the necessary deallocation calls as part of the compilation process. The strategy of escape analysis is key in CTGC, since it is used to find the locations in programs where heap cells become obsolete \cite{mercury}. \\
 
 Many CTGCs base their liveness anaylsis of program on the framework set down in \cite{bruynooghe}. In this framework the possibility of each term created during execution sharing memory with other terms is calculated. Once this is done, finding where and when each of these terms is accessed in the program yields information about when chunks of memory become obsolete. 
 
-
 \section{Conclusion}
+In conclusion, garbage collection and its various implementations are incredibly useful 
 \newpage
 \begin{thebibliography}{}
 \bibitem{berg02}
