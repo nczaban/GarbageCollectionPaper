@@ -13,9 +13,9 @@ Traditionally most programming languages have used manual memory management to a
 
 Alas, however cliche ``with great power comes great responsibility'' sounds, it applies well to manual memory management. There are several mistakes associated with it that can cause programs to crash or behave unexpectedly. Foremost of these is simply forgetting to free memory; this will result in the heap eventually running out of memory. Even if a reference is removed from the stack, the memory in the heap will remain unless explicitly freed. This type of problem is called a memory leak.\\
 
-Another problem is freeing memory before it is done being used. Then it is possible to have references to memory that is no longer allocated (dangling pointers, to continue the C example). Finally, repeatedly freeing the same memory can cause programs to crash. \cite{os_textbook}\\
+Another problem is freeing memory before it is done being used. Then it is possible to have references to memory that is no longer allocated (dangling pointers, to continue the C example). Finally, repeatedly freeing the same memory can cause programs to crash \cite{os_textbook}.\\
 
-These issues prompted programming language developers to begin implementing automatic memory management, starting with John McCarthy and Lisp in the late 1950s.\cite{https://www.seas.harvard.edu/courses/cs252/2016fa/16.pdf} Over time, these algorithms have come to be called garbage collectors, and are a key piece of most modern programming languages. This paper explores garbage collectors, their comparison to manual memory management and performance, and their general strategies and implementations. 
+These issues prompted programming language developers to begin implementing automatic memory management, starting with John McCarthy and Lisp in the late 1950s \cite{https://www.seas.harvard.edu/courses/cs252/2016fa/16.pdf}. Over time, these algorithms have come to be called garbage collectors, and are a key piece of most modern programming languages. This paper explores garbage collectors, their comparison to manual memory management and performance, and their general strategies and implementations. 
 
 \subsection{Definitions}
 \section{Garbage Collection vs. Manual Memory Management}
@@ -41,8 +41,24 @@ There are a number of considerations for reference counting strategies, however.
 \subsection{Escape Analysis}
 
 \section{Implementation}
-\subsection{Compile-Time Garbage Collection}
+There are variety of ways to implement the strategies above, and perhaps the biggest difference is whether they are implemented as compile-time garbage collectors or real-time garbage collectors.
 \subsection{Real-Time Garbage Collection}
+A real-time implementation of a garbage collector runs as a separate process alongside the user program. Whenever the user program needs memory, it is up to the garbage collector to perform the necessary memory management to supply the memory. \\
+
+This garbage collection process can operate under one of three styles: stop-the-world, incremental, and concurrent. The first of these is perhaps the most naive. In the case of tracing, the garbage collector might halt the user program and conduct a full trace of memory, deallocating the objects with no references. This style is bad for interactive programs, however, so incremental or concurrent garbage collectors are often preferred. These collectors either execute collection in small phases or never interrupt execution of the user program. \\
+
+An example of such a collecting style is David Ungar's generational scavenging \cite{ungar}. His approach separates objects into old and new spaces. The new space is used to allocate objects. Old objects that reference new ones are put into a remembered set, and these new objects are allowed to stick around. If a new object sticks around long enough, it is placed into the old space. During each iteration of the collector, it is only trying to reach new objects from a few remembered objects, making the overhead very low. Because it does not consider all objects, however, it does not always deallocate everything it needs to, neccessitating a full analysis of each object at times. \\
+
+
+In these different styles,  we see a tradeoff between latency and throughput, where throughput is the efficiency of memory management. Concurrent garbage collectors, using technique's like Ungar's scavenging, have lower latency, but low throughput. Stop-the-world type approaches, however, have high latency, but higher throughput.
+
+
+\subsection{Compile-Time Garbage Collection}
+
+Compared to the overhead of running a real-time garbage collector alongside the user program, a garbage collector that operates at compile-time is quite attractive. A CTGC recognizes where in the program execution will no longer be needed and inserts the necessary deallocation calls as part of the compilation process. The strategy of escape analysis is key in CTGC, since it is used to find the locations in programs where heap cells become obsolete \cite{mercury}. \\
+
+Many CTGCs base their liveness anaylsis of program on the framework set down in \cite{bruynooghe}. In this framework the possibility of each term created during execution sharing memory with other terms is calculated. Once this is done, finding where and when each of these terms is accessed in the program yields information about when chunks of memory become obsolete. 
+
 
 \section{Conclusion}
 \newpage
@@ -61,5 +77,6 @@ There are a number of considerations for reference counting strategies, however.
 
 \bibitem{ibmJava}
   ``Real-time Java, Part 4: Real-time garbage collection''.
+
 \end{thebibliography}
 \end{document}
