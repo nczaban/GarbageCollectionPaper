@@ -1,5 +1,4 @@
 \documentclass[12pt]{article}
-\usepackage[margin=1in]{geometry}
 \begin{document}
 \title{Garbage Collection}
 \author{Nicholas Czaban \& Joe MacInnes}
@@ -24,7 +23,6 @@ Garbage collection, on the other hand, is more thorough in freeing memory than m
 
 Garbage collectors are implemented as language features, either in the compiler or runtime system. In comparison, manual memory management is performed in the code; destructor calls are explicitly written by the programmer into functions and loops.
 
-\section{Performance}
 
 \section{Strategies}
 Garbage collectors come in a variety of implementations, but there are three common types of collectors. Tracing garbage collectors track objects through chains of references; reference counting collectors create a list tracking each object and its use; escape analysis determines which objects will not persist after its static scope.
@@ -56,9 +54,20 @@ Compared to the overhead of running a real-time garbage collector alongside the 
 
 Many CTGCs base their aliveness analysis of program on the framework set down in \cite{bruynooghe}. In this framework the possibility of each term created during execution sharing memory with other terms is calculated. Once this is done, finding where and when each of these terms is accessed in the program yields information about when chunks of memory become obsolete. 
 
+
+\section{Performance}
+
+It can be difficult to evaluate the performance of a garbage collector, for there exists so many varieties of implementation. In addition, comparing a garbange collector's efficacy compared to manual memory management is challenged when considering most modern languages are designed to use garbage collectors. Without any support for manual memory management, fair analysis remains elusive. That being said, there are several metrics which can be used to compare garbage collectors, principally heap footprint and runtime.
+
+A collector's heap footprint refers to how much of main memory it takes up during an application's life. This value should be minimized, since a smaller heap footprint means the garbage collector is doing a better job cleaning up and reusing memory.
+
+The runtime metric measures how much of an application's runtime is dedicated to the garbage collector. This value should also be minimized, since the garbage collector should not get in the main program's way.
+
+Generally speaking, the two metrics are inversely related. Smaller heap footprints require more exhaustive collectors, but these collectors demand more CPU time. More heuristic collectors use less CPU time, but aren't as good at managing memory, increasing the heap footprint. \cite{ref5}
 \section{Conclusion}
 In conclusion, garbage collection and its various implementations are incredibly useful in keeping memory available for programs. While manual memory management is a more apt strategy when resources are scarce, garbage collection has an implementation for most, if not all, possible use cases. Furthermore, some garbage collectors are capable of using multiple strategies to ensure more thorough freeing of memory.
 \newpage
+\bibliographystyle{}
 \begin{thebibliography}{}
 \bibitem{berg02}
   Berger, E. D.; Zorn, B. G.; McKinley, K. S. (November 2002). ``Reconsidering Custom Memory Allocation''. Proceedings of the 17th ACM SIGPLAN conference on Object-oriented programming, systems, languages, and applications. pp. 1–12.
