@@ -29,9 +29,9 @@ Garbage collectors come in a variety of implementations, but there are three com
 \subsection{Tracing}
 Tracing garbage collection is by far the most common form of garbage collection. In its traditional implementation, programs run until the heap is filled, then the program stops while the garbage collector frees up memory \cite{ibmJava}. The actual time and frequency that the program will be stopped is dependent on many factors, including the amount of garbage, the size of the objects used by the program, and how interconnected the objects are.\\
 
-The garbage collection process has two phases: mark and sweep. In the mark phase, all objects visible to the application are traced through and marked as live, preventing the garbage collector from freeing those objects. This tracing is done by starting at a root set - containing internal structures like stacks and global references - and following a chain of references through all possible paths. The ``dead'' objects to be freed by the garbage collector are the objects with no connections, direct or indirect, to the root set. In the sweep phase, the heap is examined and any memory labeled as ``dead'' is brought back into the free store.\\
+The garbage collection process has two phases: mark and sweep. In the mark phase, all objects visible to the application are traced through and marked as live, preventing the garbage collector from freeing those objects. This tracing is done by starting at a root set - containing internal structures like stacks and global references - and following a chain of references through all possible paths. The ``dead'' objects to be freed by the garbage collector are the objects with no connections, direct or indirect, to the root set. In the sweep phase, the heap is examined and any memory labeled as ``dead'' is brought back into the free store \cite{ibmJava}.\\
 
-There is one major flaw to this method of garbage collection: the actual time spent collecting garbage is impossible to determine. In order to create garbage collectors with predictable runtimes, a variant of the tracing garbage collector is used, called a metronome garbage collector. This implementation sets a length of time for the garbage collector to operate. In this way, a programmer can use a tracing garbage collector without having lengthy pauses in execution; instead, the marking and sweeping is more frequent, but each individual phase can be set imperceptibly short.
+There is one major flaw to this method of garbage collection: the actual time spent collecting garbage is impossible to determine. In order to create garbage collectors with predictable runtimes, a variant of the tracing garbage collector is used, called a metronome garbage collector \cite{ibmJava}. This implementation sets a length of time for the garbage collector to operate. In this way, a programmer can use a tracing garbage collector without having lengthy pauses in execution; instead, the marking and sweeping is more frequent, but each individual phase can be set imperceptibly short.
 \subsection{Reference Counting}
 Common causes of memory leaks in manual memory managed systems are unusual paths through code blocks \cite{pythDocs}. For instance, a block could be manually freed at the end of a function, but if this function has a premature exit case (such as error catching) the block will remain allocated and unused. To avoid this, Python and other languages use {\it reference counting}, keeping track of the number of references to each object. Once the number of references reaches zero, the block can be safely freed.\\
 
@@ -67,25 +67,28 @@ Generally speaking, the two metrics are inversely related. Smaller heap footprin
 \section{Conclusion}
 In conclusion, garbage collection and its various implementations are incredibly useful in keeping memory available for programs. While manual memory management is a more apt strategy when resources are scarce, garbage collection has an implementation for most, if not all, possible use cases. Furthermore, some garbage collectors are capable of using multiple strategies to ensure more thorough freeing of memory.
 \newpage
-\bibliographystyle{}
-\begin{thebibliography}{}
-\bibitem{berg02}
-  Berger, E. D.; Zorn, B. G.; McKinley, K. S. (November 2002). ``Reconsidering Custom Memory Allocation''. Proceedings of the 17th ACM SIGPLAN conference on Object-oriented programming, systems, languages, and applications. pp. 1–12.
+\bibliographystyle{annotate}
+\bibliography{bib}
 
-\bibitem{blan03}
-  Blanchet, Bruno (November 2003). "Escape Analysis for JavaTM: Theory and Practice". ACM Trans. Program. Lang. Syst. 25 (6): 713–775.
+%\bibliographystyle{}
+%\begin{thebibliography}{}
+%\bibitem{berg02}
+%  Berger, E. D.; Zorn, B. G.; McKinley, K. S. (November 2002). ``Reconsidering Custom Memory Allocation''. Proceedings of the 17th ACM SIGPLAN conference on Object-oriented programming, systems, languages, and applications. pp. 1–12.
+
+%\bibitem{blan03}
+%  Blanchet, Bruno (November 2003). "Escape Analysis for JavaTM: Theory and Practice". ACM Trans. Program. Lang. Syst. 25 (6): 713–775.
   
-\bibitem{chis11}
-  Chisnall, David (2011-01-12). Influential Programming Languages, Part 4: Lisp.
+%\bibitem{chis11}
+%  Chisnall, David (2011-01-12). Influential Programming Languages, Part 4: Lisp.
   
-\bibitem{hertz05}
-  Hertz, Matthew; Berger, Emery D. (2005). ``Quantifying the Performance of Garbage Collection vs. Explicit Memory Management.'' OOPSLA 2005.
+%\bibitem{hertz05}
+%  Hertz, Matthew; Berger, Emery D. (2005). ``Quantifying the Performance of Garbage Collection vs. Explicit Memory Management.'' OOPSLA 2005.
 
-\bibitem{pythDocs}
-  ``Reference Counts''. Extending and Embedding the Python Interpreter. 21 February 2008.
+%\bibitem{pythDocs}
+%  ``Reference Counts''. Extending and Embedding the Python Interpreter. 21 February 2008.
 
-\bibitem{ibmJava}
-  ``Real-time Java, Part 4: Real-time garbage collection''.
+%\bibitem{ibmJava}
+%  ``Real-time Java, Part 4: Real-time garbage collection''.
 
 \end{thebibliography}
 \end{document}
