@@ -23,47 +23,49 @@ Although automatic garbage collection was first introduced with Lisp \cite{chis1
 Garbage collection, on the other hand, is more thorough in freeing memory than manual memory management when using a combination of automatic techniques. It is almost totally effective at preventing memory leaks, stops dangling pointer errors, and improves the modularity of a program \cite{hertz05}. Although garbage collection generally requires a good deal of overhead from the program to implement, the original Lisp version was designed for machines with only 30,000 words of memory \cite{chis11}.\\
 
 Garbage collectors are implemented as language features, either in the compiler or runtime system. In comparison, manual memory management is performed in the code; destructor calls are explicitly written by the programmer into functions and loops.
-\subsection{Simultaneous GC and MMM}
 
 \section{Performance}
 
 \section{Strategies}
-
+Garbage collectors come in a variety of implementations, but there are three common types of collectors. Tracing garbage collectors track objects through chains of references; reference counting collectors create a list tracking each object and its use; escape analysis determines which objects will not persist after its static scope.
 \subsection{Tracing}
 Tracing garbage collection is by far the most common form of garbage collection. In its traditional implementation, programs run until the heap is filled, then the program stops while the garbage collector frees up memory \cite{ibmJava}. The actual time and frequency that the program will be stopped is dependent on many factors, including the amount of garbage, the size of the objects used by the program, and how interconnected the objects are.\\
 
-The garbage collection process has two phases: mark and sweep. In the mark phase, all objects visible to the application are traced through and marked as live, preventing the garbage collector from freeing those objects. This tracing is done by starting at a root set - containing internal structures like stacks and global references - and following a chain of references through all possible paths. The ``dead'' objects to be freed by the garbage collector are the objects with no connections, direct or indirect, to the root set. In the sweep phase, the heap is examined and any memory labeled as ``dead'' is brought back into the free store.
+The garbage collection process has two phases: mark and sweep. In the mark phase, all objects visible to the application are traced through and marked as live, preventing the garbage collector from freeing those objects. This tracing is done by starting at a root set - containing internal structures like stacks and global references - and following a chain of references through all possible paths. The ``dead'' objects to be freed by the garbage collector are the objects with no connections, direct or indirect, to the root set. In the sweep phase, the heap is examined and any memory labeled as ``dead'' is brought back into the free store.\\
+
+There is one major flaw to this method of garbage collection: the actual time spent collecting garbage is impossible to determine. In order to create garbage collectors with predictable runtimes, a variant of the tracing garbage collector is used, called a metronome garbage collector. This implementation sets a length of time for the garbage collector to operate. In this way, a programmer can use a tracing garbage collector without having lengthy pauses in execution; instead, the marking and sweeping is more frequent, but each individual phase can be set imperceptibly short.
 \subsection{Reference Counting}
-Common causes of memory leaks in manual memory managed systems are unusual paths through code blocks \cite{pythDocs}. For instance, a block is freed at the end of a function, but if this function has a premature exit case (such as error catching) the block will remain allocated and unused. To avoid this, Python and other languages use {\it reference counting}, keeping track of the number of references to each object. Once the number of references reaches zero, the block can be safely freed.\\
+Common causes of memory leaks in manual memory managed systems are unusual paths through code blocks \cite{pythDocs}. For instance, a block could be manually freed at the end of a function, but if this function has a premature exit case (such as error catching) the block will remain allocated and unused. To avoid this, Python and other languages use {\it reference counting}, keeping track of the number of references to each object. Once the number of references reaches zero, the block can be safely freed.\\
 
 There are a number of considerations for reference counting strategies, however. Firstly, it is important to avoid cycles, or references storing references to each other. If these cycles are not accounted for, multiple blocks could remain in memory after they are needed, since the references to themselves persist after all other references are removed. A second consideration is the type of count modifications. If a program is being run in a multithreaded environment, the reference counter must be changed with atomic operations.
 \subsection{Escape Analysis}
-
+The purpose of escape analysis is to select objects which can be safely allocated on the stack, instead of the heap. The formal definition given in Blanchet's paper states that ``an object \textit{o} can be stack-allocated in method \textit{m} if and only if it is not reachable at the end of \textit{m}'' \cite{blan03}. Object-oriented languages are particularly well-suited to this form of garbage collection; a new object created in a function may be allocated on that function's stack if the object is never used outside the function call. This type of garbage collection requires deep analysis of the code to ensure that no aliasing is occurring with the objects.
 \section{Implementation}
 There are variety of ways to implement the strategies above, and perhaps the biggest difference is whether they are implemented as compile-time garbage collectors or real-time garbage collectors.
 \subsection{Real-Time Garbage Collection}
-A real-time implementation of a garbage collector runs as a separate process alongside the user program. Whenever the user program needs memory, it is up to the garbage collector to perform the necessary memory management to supply the memory. \\
+A real-time implementation of a garbage collector runs as a separate process alongside the user program. Whenever the user program needs memory, it is up to the garbage collector to perform the necessary memory management to supply the memory.\\
 
-This garbage collection process can operate under one of three styles: stop-the-world, incremental, and concurrent. The first of these is perhaps the most naive. In the case of tracing, the garbage collector might halt the user program and conduct a full trace of memory, deallocating the objects with no references. This style is bad for interactive programs, however, so incremental or concurrent garbage collectors are often preferred. These collectors either execute collection in small phases or never interrupt execution of the user program. \\
+This garbage collection process can operate under one of three styles: stop-the-world, incremental, and concurrent. The first of these is perhaps the most naive. In the case of tracing, the garbage collector might halt the user program and conduct a full trace of memory, deallocating the objects with no references. This style is bad for interactive programs, however, so incremental or concurrent garbage collectors are often preferred. These collectors either execute collection in small phases or never interrupt execution of the user program.\\
 
-An example of such a collecting style is David Ungar's generational scavenging \cite{ungar}. His approach separates objects into old and new spaces. The new space is used to allocate objects. Old objects that reference new ones are put into a remembered set, and these new objects are allowed to stick around. If a new object sticks around long enough, it is placed into the old space. During each iteration of the collector, it is only trying to reach new objects from a few remembered objects, making the overhead very low. Because it does not consider all objects, however, it does not always deallocate everything it needs to, neccessitating a full analysis of each object at times. \\
+An example of such a collecting style is David Ungar's generational scavenging \cite{ungar}. His approach separates objects into old and new spaces. The new space is used to allocate objects. Old objects that reference new ones are put into a remembered set, and these new objects are allowed to stick around. If a new object sticks around long enough, it is placed into the old space. During each iteration of the collector, it is only trying to reach new objects from a few remembered objects, making the overhead very low. Because it does not consider all objects, however, it does not always deallocate everything it needs to, necessitating a full analysis of each object at times.\\
 
-
-In these different styles,  we see a tradeoff between latency and throughput, where throughput is the efficiency of memory management. Concurrent garbage collectors, using technique's like Ungar's scavenging, have lower latency, but low throughput. Stop-the-world type approaches, however, have high latency, but higher throughput.
-
+In these different styles,  we see a trade-off between latency and throughput, where throughput is the efficiency of memory management. Concurrent garbage collectors, using technique's like Ungar's scavenging, have lower latency, but low throughput. Stop-the-world type approaches, however, have high latency, but higher throughput.
 
 \subsection{Compile-Time Garbage Collection}
-Compared to the overhead of running a real-time garbage collector alongside the user program, a garbage collector that operates at compile-time is quite attractive. A CTGC recognizes where in the program execution will no longer be needed and inserts the necessary deallocation calls as part of the compilation process. The strategy of escape analysis is key in CTGC, since it is used to find the locations in programs where heap cells become obsolete \cite{mercury}. \\
+Compared to the overhead of running a real-time garbage collector alongside the user program, a garbage collector that operates at compile-time is quite attractive. A CTGC recognizes where in the program execution will no longer be needed and inserts the necessary deallocation calls as part of the compilation process. The strategy of escape analysis is key in CTGC, since it is used to find the locations in programs where heap cells become obsolete \cite{mercury}.\\
 
-Many CTGCs base their liveness anaylsis of program on the framework set down in \cite{bruynooghe}. In this framework the possibility of each term created during execution sharing memory with other terms is calculated. Once this is done, finding where and when each of these terms is accessed in the program yields information about when chunks of memory become obsolete. 
+Many CTGCs base their aliveness analysis of program on the framework set down in \cite{bruynooghe}. In this framework the possibility of each term created during execution sharing memory with other terms is calculated. Once this is done, finding where and when each of these terms is accessed in the program yields information about when chunks of memory become obsolete. 
 
 \section{Conclusion}
-In conclusion, garbage collection and its various implementations are incredibly useful 
+In conclusion, garbage collection and its various implementations are incredibly useful in keeping memory available for programs. While manual memory management is a more apt strategy when resources are scarce, garbage collection has an implementation for most, if not all, possible use cases. Furthermore, some garbage collectors are capable of using multiple strategies to ensure more thorough freeing of memory.
 \newpage
 \begin{thebibliography}{}
 \bibitem{berg02}
   Berger, E. D.; Zorn, B. G.; McKinley, K. S. (November 2002). ``Reconsidering Custom Memory Allocation''. Proceedings of the 17th ACM SIGPLAN conference on Object-oriented programming, systems, languages, and applications. pp. 1–12.
 
+\bibitem{blan03}
+  Blanchet, Bruno (November 2003). "Escape Analysis for JavaTM: Theory and Practice". ACM Trans. Program. Lang. Syst. 25 (6): 713–775.
+  
 \bibitem{chis11}
   Chisnall, David (2011-01-12). Influential Programming Languages, Part 4: Lisp.
   
