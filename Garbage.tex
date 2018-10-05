@@ -2,8 +2,7 @@
 \begin{document}
 \title{Garbage Collection}
 \author{Nicholas Czaban \& Joe MacInnes}
-\maketitle
-\section{Introduction}
+\maketitle \section{Introduction}
 Memory plays a crucial role in any program, for it is in memory that a process stores instructions, data, and references to data. Generally, there are two areas of memory available to a process: the stack and the heap. While the stack handles storage of local variables and procedure call information (e.g. return addresses and argument storage), the heap is used to dynamically allocate memory. This is useful for using memory only when it's needed, and for not wasting memory, since a programmer can specify exactly how much memory is needed during allocation.\\
 
 Once memory has been allocated on the heap, it is up to the stack to store a reference to the memory chunk. At any time following, the memory can be accessed by following this reference. The question then arises, ``What is done when the allocated memory is no longer needed?" The heap is not infinite - thus one cannot simply continue to allocate new memory forever. A programming language needs to provide some method for freeing no longer used memory.\\
@@ -14,7 +13,7 @@ Alas, however cliche ``with great power comes great responsibility'' sounds, it 
 
 Another problem is freeing memory before it is done being used. Then it is possible to have references to memory that is no longer allocated (dangling pointers, to continue the C example). Finally, repeatedly freeing the same memory can cause programs to crash \cite{os_textbook}.\\
 
-These issues prompted programming language developers to begin implementing automatic memory management, starting with John McCarthy and Lisp in the late 1950s \cite{https://www.seas.harvard.edu/courses/cs252/2016fa/16.pdf}. Over time, these algorithms have come to be called garbage collectors, and are a key piece of most modern programming languages. This paper explores garbage collectors, their comparison to manual memory management and performance, and their general strategies and implementations. 
+These issues prompted programming language developers to begin implementing automatic memory management, starting with John McCarthy and Lisp in the late 1950s \cite{goodman}. Over time, these algorithms have come to be called garbage collectors, and are a key piece of most modern programming languages. This paper explores garbage collectors, their comparison to manual memory management and performance, and their general strategies and implementations. 
 
 \section{Garbage Collection versus Manual Memory Management}
 Although automatic garbage collection was first introduced with Lisp \cite{chis11}, the majority of programming languages used manual memory management until the 1990's. These are seen in constructor functions like \textit{malloc()} in C or the \textit{new} operator of C++, and their respective destructors \textit{free()} and \textit{delete} \cite{pythDocs}. Manual memory management is significantly more efficient than garbage collection or other automatic techniques. The memory is reclaimed immediately, whereas garbage collection systems leave memory unreleased for longer periods of time. This prevents memory ``thrashing'' when programs approach the limits of their working set.\\
@@ -50,9 +49,9 @@ An example of such a collecting style is David Ungar's generational scavenging \
 In these different styles,  we see a trade-off between latency and throughput, where throughput is the efficiency of memory management. Concurrent garbage collectors, using technique's like Ungar's scavenging, have lower latency, but low throughput. Stop-the-world type approaches, however, have high latency, but higher throughput.
 
 \subsection{Compile-Time Garbage Collection}
-Compared to the overhead of running a real-time garbage collector alongside the user program, a garbage collector that operates at compile-time is quite attractive. A CTGC recognizes where in the program execution will no longer be needed and inserts the necessary deallocation calls as part of the compilation process. The strategy of escape analysis is key in CTGC, since it is used to find the locations in programs where heap cells become obsolete \cite{mercury}.\\
+Compared to the overhead of running a real-time garbage collector alongside the user program, a garbage collector that operates at compile-time is quite attractive. A CTGC recognizes where in the program execution will no longer be needed and inserts the necessary deallocation calls as part of the compilation process. The strategy of escape analysis is key in CTGC, since it is used to find the locations in programs where heap cells become obsolete.\\
 
-Many CTGCs base their aliveness analysis of program on the framework set down in \cite{bruynooghe}. In this framework the possibility of each term created during execution sharing memory with other terms is calculated. Once this is done, finding where and when each of these terms is accessed in the program yields information about when chunks of memory become obsolete. 
+Many CTGCs base their aliveness analysis of program on the framework set down in \cite{bruy}. In this framework the possibility of each term created during execution sharing memory with other terms is calculated. Once this is done, finding where and when each of these terms is accessed in the program yields information about when chunks of memory become obsolete. 
 
 
 \section{Performance}
@@ -63,7 +62,7 @@ A collector's heap footprint refers to how much of main memory it takes up durin
 
 The runtime metric measures how much of an application's runtime is dedicated to the garbage collector. This value should also be minimized, since the garbage collector should not get in the main program's way.
 
-Generally speaking, the two metrics are inversely related. Smaller heap footprints require more exhaustive collectors, but these collectors demand more CPU time. More heuristic collectors use less CPU time, but aren't as good at managing memory, increasing the heap footprint. \cite{ref5}
+Generally speaking, the two metrics are inversely related. Smaller heap footprints require more exhaustive collectors, but these collectors demand more CPU time. More heuristic collectors use less CPU time, but aren't as good at managing memory, increasing the heap footprint. \cite{perform}
 \section{Conclusion}
 In conclusion, garbage collection and its various implementations are incredibly useful in keeping memory available for programs. While manual memory management is a more apt strategy when resources are scarce, garbage collection has an implementation for most, if not all, possible use cases. Furthermore, some garbage collectors are capable of using multiple strategies to ensure more thorough freeing of memory.
 \newpage
@@ -90,5 +89,5 @@ In conclusion, garbage collection and its various implementations are incredibly
 %\bibitem{ibmJava}
 %  ``Real-time Java, Part 4: Real-time garbage collection''.
 
-\end{thebibliography}
+%\end{thebibliography}
 \end{document}
