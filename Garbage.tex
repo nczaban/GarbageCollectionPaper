@@ -1,4 +1,5 @@
 \documentclass[12pt]{article}
+\usepackage{url}
 \begin{document}
 \title{Garbage Collection}
 \author{Nicholas Czaban \& Joe MacInnes}
@@ -18,7 +19,7 @@ These issues prompted programming language developers to begin implementing auto
 \section{Garbage Collection versus Manual Memory Management}
 Although automatic garbage collection was first introduced with Lisp \cite{chis11}, the majority of programming languages used manual memory management until the 1990's. These are seen in constructor functions like \textit{malloc()} in C or the \textit{new} operator of C++, and their respective destructors \textit{free()} and \textit{delete} \cite{pythDocs}. Manual memory management is significantly more efficient than garbage collection or other automatic techniques. The memory is reclaimed immediately, whereas garbage collection systems leave memory unreleased for longer periods of time. This prevents memory ``thrashing'' when programs approach the limits of their working set.\\
 
-Garbage collection, on the other hand, is more thorough in freeing memory than manual memory management when using a combination of automatic techniques. It is almost totally effective at preventing memory leaks, stops dangling pointer errors, and improves the modularity of a program \cite{hertz05}. Although garbage collection generally requires a good deal of overhead from the program to implement, the original Lisp version was designed for machines with only 30,000 words of memory \cite{chis11}.\\
+Garbage collection, on the other hand, is more thorough in freeing memory than manual memory management when using a combination of automatic techniques. It is almost totally effective at preventing memory leaks, stops dangling pointer errors, and improves the modularity of a program \cite{perform}. Although garbage collection generally requires a good deal of overhead from the program to implement, the original Lisp version was designed for machines with only 30,000 words of memory \cite{chis11}.\\
 
 Garbage collectors are implemented as language features, either in the compiler or runtime system. In comparison, manual memory management is performed in the code; destructor calls are explicitly written by the programmer into functions and loops.
 
@@ -68,26 +69,4 @@ In conclusion, garbage collection and its various implementations are incredibly
 \newpage
 \bibliographystyle{annotate}
 \bibliography{bib}
-
-%\bibliographystyle{}
-%\begin{thebibliography}{}
-%\bibitem{berg02}
-%  Berger, E. D.; Zorn, B. G.; McKinley, K. S. (November 2002). ``Reconsidering Custom Memory Allocation''. Proceedings of the 17th ACM SIGPLAN conference on Object-oriented programming, systems, languages, and applications. pp. 1–12.
-
-%\bibitem{blan03}
-%  Blanchet, Bruno (November 2003). "Escape Analysis for JavaTM: Theory and Practice". ACM Trans. Program. Lang. Syst. 25 (6): 713–775.
-  
-%\bibitem{chis11}
-%  Chisnall, David (2011-01-12). Influential Programming Languages, Part 4: Lisp.
-  
-%\bibitem{hertz05}
-%  Hertz, Matthew; Berger, Emery D. (2005). ``Quantifying the Performance of Garbage Collection vs. Explicit Memory Management.'' OOPSLA 2005.
-
-%\bibitem{pythDocs}
-%  ``Reference Counts''. Extending and Embedding the Python Interpreter. 21 February 2008.
-
-%\bibitem{ibmJava}
-%  ``Real-time Java, Part 4: Real-time garbage collection''.
-
-%\end{thebibliography}
 \end{document}

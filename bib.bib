@@ -1,26 +1,9 @@
-%%\bibitem{berg02}
-%%  Berger, E. D.; Zorn, B. G.; McKinley, K. S. (November 2002). ``Reconsidering Custom Memory Allocation''. Proceedings of the 17th ACM SIGPLAN conference on Object-oriented programming, systems, languages, and applications. pp. 1–12.
-
-%%\bibitem{blan03}
-%%  Blanchet, Bruno (November 2003). "Escape Analysis for JavaTM: Theory and Practice". ACM Trans. Program. Lang. Syst. 25 (6): 713–775.
-  
-%%\bibitem{chis11}
-%%  Chisnall, David (2011-01-12). Influential Programming Languages, Part 4: Lisp.
-  
-%%\bibitem{hertz05}
-%%  Hertz, Matthew; Berger, Emery D. (2005). ``Quantifying the Performance of Garbage Collection vs. Explicit Memory Management.'' OOPSLA 2005.
-
-%%\bibitem{pythDocs}
-%%  ``Reference Counts''. Extending and Embedding the Python Interpreter. 21 February 2008.
-
-%%\bibitem{ibmJava}
-%%  ``Real-time Java, Part 4: Real-time garbage collection''.
 @Book{os_textbook,
   author =       {Remzi H. Arpaci-Dusseau and Andrea C. Arpaci-Dusseau},
   title =        "{Operating Systems: Three Easy Pieces}",
   publisher =    {Arpaci-Dusseau Books},
   month =        "May",
-  year =         {2015},
+  year =         2015,
   edition =      {0.91},
 },
 
@@ -65,15 +48,18 @@
 	language = {en},
 	author = {Hertz, Matthew and Berger, Emery D},
 	pages = {14},
+	Year = 2005,
+	Journal = {OOPSLA},
 	file = {Hertz and Berger - Quantifying the Performance of Garbage Collection .pdf:/Users/joemacinnes/Zotero/storage/KHRDV8R4/Hertz and Berger - Quantifying the Performance of Garbage Collection .pdf:application/pdf}
 }
-@article{goodman,
+@misc{goodman,
     title = {Origins of {Garbage} {Collection}},
     abstract = {McCarthy introduces the LISP language and invents garbage collection to implement the language, devoting just over a page to a mark and sweep algorithm that identiﬁes reachable words by depth-ﬁrst search. McCarthy insists that S-expression structures be immutable, allowing for copying by reference sharing. This optimization, as well as a future relaxation on immutability, gives a practical motivation for garbage collection.},
     language = {en},
     author = {Goodman, Jason},
     pages = {5},
-    file = {Goodman - Origins of Garbage Collection.pdf:/Users/joemacinnes/Zotero/storage/2WCSXWW3/Goodman - Origins of Garbage Collection.pdf:application/pdf}
+    howpublished = {\url{https://www.seas.harvard.edu/courses/cs252/2016fa/16.pdf}},
+	note = {Accessed: 2018-10-4}
 },
 
 
@@ -84,12 +70,6 @@
 	howpublished = {\url{http://www.informit.com/articles/article.aspx?p=1671639}},
 	note = {Accessed: 2018-10-4}
 	}
-
-@proceedings{hertz05,
-    Author = {Matthew ~Hertz and Emery D. ~Berger},
-	Year = 2005,
-	Title = {Quantifying the Performance of Garbage Collection vs. Explicit Memory Management},
-	Organization = {OOPSLA}}
 
 @article{blan03,
     Author = {Bruno ~Blanchet},
@@ -114,5 +94,6 @@
 	Editor = {Fred L. ~Drake, Jr.},
 	Booktitle = {Extending and Embedding the Python Interpreter},
 	Year = {2008},
-	howpublished = {\url{https://docs.python.org/release/2.5.2/ext/refcounts.html}}
+	howpublished = {\url{https://docs.python.org/release/2.5.2/ext/refcounts.html},
+	note = {Accessed: 2018-10-4}}
 	}
